@@ -1,0 +1,25 @@
+fastapi==0.136.3
+uvicorn[standard]==0.49.0
+pydantic==2.13.4
+pydantic-settings==2.14.1
+python-multipart==0.0.32
+httpx==0.28.1
+python-dotenv==1.2.2
+
+# Stage 1 — background removal (briaai/RMBG-1.4 via transformers, trust_remote_code=True).
+# transformers MUST stay pinned at 4.49.0: RMBG-1.4's custom modeling code references
+# `_tied_weights_keys`, an internal attribute that transformers 5.x renamed, breaking the load.
+transformers==4.49.0
+torch==2.12.0
+torchvision==0.27.0
+pillow==12.2.0
+scikit-image==0.26.0
+
+# Stage 2 — VLM tagging calls Gemini directly via httpx (already a dependency above);
+# no SDK needed.
+
+# Stage 3 — embeddings (local, sentence-transformers/all-MiniLM-L6-v2, 384-dim)
+# + Pinecone upsert. Note: the modern package is `pinecone`, not the deprecated
+# `pinecone-client`.
+sentence-transformers==5.5.1
+pinecone==9.1.0
