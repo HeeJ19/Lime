@@ -52,6 +52,7 @@ export async function ingestPhoto(formData: FormData): Promise<IngestResult> {
     const res = await fetch(`${BACKEND_URL}/items/ingest`, {
       method: "POST",
       body: backendForm,
+      signal: AbortSignal.timeout(60_000),
     });
     if (!res.ok) {
       const detail = (await res.json().catch(() => null)) as { detail?: string } | null;

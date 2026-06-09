@@ -97,7 +97,7 @@ export function DeckBoard({ wardrobe }: DeckBoardProps) {
   }
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 px-4 pt-4 pb-40">
+    <div className="flex w-full flex-col items-center gap-6 px-4 pt-4" style={{ paddingBottom: "calc(10rem + env(safe-area-inset-bottom))" }}>
       <WeatherWidget status={weather} />
 
       {/* Outfit preview / category switcher — also doubles as a live look at
@@ -138,7 +138,7 @@ export function DeckBoard({ wardrobe }: DeckBoardProps) {
         onSwipe={advance[active]}
       />
 
-      <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 border-t border-border bg-background/90 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 border-t border-border bg-background/90 px-4 pt-4 backdrop-blur supports-[backdrop-filter]:bg-background/70" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
         {lockResult?.ok === false && (
           <p role="alert" className="text-sm text-destructive">
             {lockResult.error}

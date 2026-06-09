@@ -87,6 +87,16 @@ def tag_image(image_bytes: bytes, *, mime_type: str = "image/png") -> ItemTags:
         resp = httpx.post(_GEMINI_URL, params={"key": api_key}, json=payload, timeout=30)
         resp.raise_for_status()
         raw_text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-        return ItemTags.model_validate_json(raw_text)
-    except (httpx.HTTPError, KeyError, IndexError, ValidationError) as e:
+    except (httpx.HTTPError, KeyError, IndexError, ValueError) as e:
         raise TaggingError(f"Gemini returned an unusable response: {e}") from e
+
+    # Gemini occasionally wraps JSON in markdown code fences despite responseMimeType
+    # being set — strip them defensively before Pydantic validation.
+    cleaned = raw_text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    try:
+        return ItemTags.model_validate_json(cleaned)
+    except ValidationError as e:
+        raise TaggingError(f"Gemini output failed schema validation: {e}") from e

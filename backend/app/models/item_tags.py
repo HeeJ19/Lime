@@ -14,14 +14,34 @@ embedding text in embeddings.py — "is this a top" shouldn't influence style-si
 matching.
 """
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 
 class ItemTags(BaseModel):
     category: Literal["top", "bottom", "shoes"]
     silhouette: str
-    palette: list[str]
+    palette: Annotated[list[str], Field(min_length=1)]
     texture: str
     aesthetic: str
+
+    @field_validator("silhouette", "texture", "aesthetic", mode="before")
+    @classmethod
+    def _strip_and_require(cls, v: object) -> str:
+        if not isinstance(v, str):
+            raise ValueError("must be a string")
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("must not be empty")
+        return stripped
+
+    @field_validator("palette", mode="before")
+    @classmethod
+    def _clean_palette(cls, v: object) -> list[str]:
+        if not isinstance(v, list):
+            raise ValueError("must be a list")
+        cleaned = [c.strip() for c in v if isinstance(c, str) and c.strip()]
+        if not cleaned:
+            raise ValueError("must contain at least one color")
+        return cleaned
