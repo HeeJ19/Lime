@@ -1,5 +1,7 @@
 # Lime 🍋 — AI-Powered Digital Wardrobe
 
+[![Backend Tests](https://github.com/HeeJ19/Lime/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/HeeJ19/Lime/actions/workflows/backend-tests.yml)
+
 Lime turns a phone photo of a clothing item into a tagged, searchable entry in your digital closet — then uses vector search and live weather data to recommend outfits that actually go together.
 
 **Live app:** [lime-wardrobe.vercel.app](https://lime-wardrobe.vercel.app)
