@@ -2,9 +2,9 @@
 keyless forecast API for the user's current local conditions, which the
 recommendation service then turns into a style-matching query.
 
-Open-Meteo requires no API key and allows 10K free calls/day — see
-agent_docs/tech_stack.md. Called directly via httpx, same lightweight
-pattern as vlm_tagging.py, rather than pulling in a client SDK.
+Open-Meteo requires no API key and allows 10K free calls/day. Called
+directly via httpx, same lightweight pattern as vlm_tagging.py, rather
+than pulling in a client SDK.
 """
 
 import httpx
@@ -45,7 +45,7 @@ class WeatherError(Exception):
     """Raised when Open-Meteo can't be reached or returns an unusable response.
 
     Callers must turn this into a clean user-facing message rather than letting
-    the recommendation flow crash — see agent_docs/code_patterns.md Error Handling.
+    the recommendation flow crash.
     """
 
 

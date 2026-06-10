@@ -5,15 +5,18 @@ ingestion pipeline — see app/routers/items.py).
 Flow: Open-Meteo (current local weather) -> natural-language "ideal outfit"
 sentence -> embed -> Pinecone query scoped to this user's wardrobe, ranked
 per category. The frontend uses the ranked IDs to reorder its swipe stacks
-so the most weather-appropriate item surfaces first — see agent_docs/
-code_patterns.md "Frontend -> Recommendations" data-fetching flow.
+so the most weather-appropriate item surfaces first — see docs/ARCHITECTURE.md.
 """
+
+import logging
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from app.services.recommendations import recommend_items
 from app.services.weather import WeatherError, get_current_weather
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
@@ -37,7 +40,13 @@ def get_recommendations(
             status_code=502, detail="Couldn't fetch local weather — try again in a moment."
         )
 
-    ranked = recommend_items(user_id, weather)
+    try:
+        ranked = recommend_items(user_id, weather)
+    except Exception:
+        logger.exception("Recommendation ranking failed")
+        raise HTTPException(
+            status_code=502, detail="Couldn't generate recommendations — please try again."
+        )
 
     return RecommendationResponse(
         temperature_c=weather.temperature_c,

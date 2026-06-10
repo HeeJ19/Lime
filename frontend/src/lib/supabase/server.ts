@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // Server Components can't write cookies (Next.js restriction). The middleware
-// in src/lib/supabase/middleware.ts refreshes the session on every request,
+// in src/middleware.ts refreshes the session on every request,
 // so a no-op setAll here is safe — it never leaves the user logged out.
 export async function createClient() {
   const cookieStore = await cookies();

@@ -4,9 +4,8 @@ used for item tags, and queries Pinecone — scoped to one user's wardrobe and o
 clothing category — for the closest aesthetic matches.
 
 This reuses embeddings._get_model()/_get_index() rather than re-instantiating
-either (loading the MiniLM model is the slow part of this service — see
-agent_docs/code_patterns.md "Reuse existing modules before creating new
-abstractions"). Mirrors the prose-over-key:value rationale documented in
+either, since loading the MiniLM model is the slow part of this service.
+Mirrors the prose-over-key:value rationale documented in
 embeddings._tags_to_text: semantic embedding models match a descriptive
 sentence against item descriptions far better than raw temperature numbers.
 """

@@ -1,15 +1,15 @@
-"""Stage 2 of the ingestion pipeline: send the stripped image to Gemini 2.5 Flash
+"""Stage 2 of the ingestion pipeline: send the stripped image to Gemini 2.0 Flash
 and validate the structured JSON tags it returns (silhouette, palette, texture, aesthetic).
 
 Calls the Gemini REST API directly via httpx — same lightweight pattern as
 backend/scripts/smoke_test.py — rather than pulling in the google-generativeai SDK,
 keeping the dependency footprint small for a 4-week MVP. Uses Gemini's structured-output
 mode (`responseSchema`) so the model is constrained to the ItemTags shape at generation
-time; Pydantic then re-validates at the boundary as a second guard against the PRD's
-explicit "broken JSON parsing" quality failure.
+time; Pydantic then re-validates at the boundary as a second guard against malformed
+JSON ever reaching Pinecone or Postgres.
 
 Every response MUST be validated with the Pydantic model in app/models/item_tags.py
-before it reaches Pinecone or Postgres — see agent_docs/code_patterns.md.
+before it reaches Pinecone or Postgres — see docs/ARCHITECTURE.md.
 """
 
 import base64
@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from app.models.item_tags import ItemTags
 
 _GEMINI_URL = (
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 )
 
 _PROMPT = (
@@ -58,8 +58,7 @@ class TaggingError(Exception):
     """Raised when Gemini's response can't be parsed into valid ItemTags.
 
     Callers must turn this into a clean user-facing message (e.g. "Couldn't read
-    that item, try a clearer photo") rather than letting bad data reach the database —
-    see agent_docs/code_patterns.md Error Handling.
+    that item, try a clearer photo") rather than letting bad data reach the database.
     """
 
 

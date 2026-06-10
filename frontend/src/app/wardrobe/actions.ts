@@ -27,21 +27,28 @@ export async function getWardrobeItems(): Promise<WardrobeItem[] | { error: stri
 
   if (error) return { error: "Couldn't load your wardrobe. Try again." };
 
-  const items: WardrobeItem[] = [];
-  for (const row of rows ?? []) {
-    const { data: signed } = await supabase.storage
-      .from("clothing-photos")
-      .createSignedUrl(row.image_url, SIGNED_URL_TTL_SECONDS);
-    if (!signed) continue;
+  const paths = (rows ?? []).map((row) => row.image_url);
+  const { data: signedUrls } = await supabase.storage
+    .from("clothing-photos")
+    .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
 
-    items.push({
-      id: row.id,
-      category: row.category as WardrobeItem["category"],
-      imageUrl: signed.signedUrl,
-      silhouette: row.tags?.silhouette ?? "",
-      aesthetic: row.tags?.aesthetic ?? "",
-    });
-  }
+  const urlMap = new Map(
+    (signedUrls ?? []).flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl]] : [])),
+  );
+
+  const items: WardrobeItem[] = (rows ?? []).flatMap((row) => {
+    const imageUrl = urlMap.get(row.image_url);
+    if (!imageUrl) return [];
+    return [
+      {
+        id: row.id,
+        category: row.category as WardrobeItem["category"],
+        imageUrl,
+        silhouette: row.tags?.silhouette ?? "",
+        aesthetic: row.tags?.aesthetic ?? "",
+      },
+    ];
+  });
 
   return items;
 }

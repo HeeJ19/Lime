@@ -1,5 +1,5 @@
 """Stage 3 of the ingestion pipeline: convert validated item tags into a vector
-embedding and upsert it into Pinecone (see agent_docs/tech_stack.md for the index setup).
+embedding and upsert it into Pinecone (see docs/ARCHITECTURE.md for the index setup).
 
 Embedding model: `sentence-transformers/all-MiniLM-L6-v2` (384-dim, runs locally).
 Chosen over Gemini's `text-embedding-004` API to keep the dependency family
@@ -53,8 +53,7 @@ def embed_and_store(item_id: str, user_id: str, tags: ItemTags) -> None:
     """Embed an item's tags and upsert the resulting vector into Pinecone.
 
     The vector ID matches the Postgres `items.id` so the two stores stay joined —
-    Pinecone is the source of truth for similarity, Postgres for display metadata
-    (see agent_docs/code_patterns.md State Management).
+    Pinecone is the source of truth for similarity, Postgres for display metadata.
 
     `user_id` and `category` are stored as metadata so the recommendation engine
     can filter a similarity query down to one user's wardrobe within one clothing

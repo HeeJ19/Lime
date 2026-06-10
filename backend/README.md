@@ -14,7 +14,7 @@ FastAPI microservice for the Lime digital wardrobe app.
 
 **Endpoints:**
 - `GET /health` — liveness check
-- `POST /items/ingest` — background removal (RMBG-1.4) + VLM tagging (Gemini 2.5 Flash) + Pinecone embedding
+- `POST /items/ingest` — background removal (RMBG-1.4) + VLM tagging (Gemini 2.0 Flash) + Pinecone embedding
 - `GET /recommendations` — Open-Meteo weather → Pinecone similarity search → ranked item IDs
 
 **Required Space secrets** (Settings → Variables and secrets):

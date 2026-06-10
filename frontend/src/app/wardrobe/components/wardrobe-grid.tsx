@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { WardrobeItem } from "../actions";
 
 interface WardrobeGridProps {
@@ -20,14 +20,20 @@ type TabKey = (typeof TABS)[number]["key"];
 export function WardrobeGrid({ items }: WardrobeGridProps) {
   const [activeTab, setActiveTab] = useState<TabKey>("all");
 
-  const counts: Record<TabKey, number> = {
-    all: items.length,
-    top: items.filter((i) => i.category === "top").length,
-    bottom: items.filter((i) => i.category === "bottom").length,
-    shoes: items.filter((i) => i.category === "shoes").length,
-  };
+  const counts = useMemo<Record<TabKey, number>>(
+    () => ({
+      all: items.length,
+      top: items.filter((i) => i.category === "top").length,
+      bottom: items.filter((i) => i.category === "bottom").length,
+      shoes: items.filter((i) => i.category === "shoes").length,
+    }),
+    [items],
+  );
 
-  const visible = activeTab === "all" ? items : items.filter((i) => i.category === activeTab);
+  const visible = useMemo(
+    () => (activeTab === "all" ? items : items.filter((i) => i.category === activeTab)),
+    [items, activeTab],
+  );
 
   return (
     <div className="w-full">

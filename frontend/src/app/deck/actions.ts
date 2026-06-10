@@ -41,18 +41,25 @@ export async function getWardrobe(): Promise<DeckData | { error: string }> {
 
   if (error) return { error: "Couldn't load your wardrobe. Try again." };
 
+  const paths = (rows ?? []).map((row) => row.image_url);
+  const { data: signedUrls } = await supabase.storage
+    .from("clothing-photos")
+    .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+
+  const urlMap = new Map(
+    (signedUrls ?? []).flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl]] : [])),
+  );
+
   const deck: DeckData = { top: [], bottom: [], shoes: [] };
 
   for (const row of rows ?? []) {
-    const { data: signed } = await supabase.storage
-      .from("clothing-photos")
-      .createSignedUrl(row.image_url, SIGNED_URL_TTL_SECONDS);
-    if (!signed) continue;
+    const imageUrl = urlMap.get(row.image_url);
+    if (!imageUrl) continue;
 
     deck[row.category as DeckItem["category"]].push({
       id: row.id,
       category: row.category,
-      imageUrl: signed.signedUrl,
+      imageUrl,
       tags: row.tags,
     });
   }
@@ -74,9 +81,9 @@ interface RecommendationApiResponse {
 }
 
 // Calls the FastAPI recommendation endpoint (Open-Meteo -> embed -> Pinecone,
-// scoped to this user's wardrobe — see agent_docs/code_patterns.md "Frontend ->
-// Recommendations"). Coordinates come from the browser's Geolocation API; if the
-// user declines location access, the deck simply keeps its default ordering.
+// scoped to this user's wardrobe — see docs/ARCHITECTURE.md). Coordinates come
+// from the browser's Geolocation API; if the user declines location access, the
+// deck simply keeps its default ordering.
 export async function getRecommendations(
   latitude: number,
   longitude: number,

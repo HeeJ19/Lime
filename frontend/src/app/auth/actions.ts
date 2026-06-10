@@ -5,12 +5,15 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export async function login(formData: FormData) {
+  const email = formData.get("email");
+  const password = formData.get("password");
+  if (typeof email !== "string" || !email.trim() || typeof password !== "string" || !password) {
+    redirect("/login?error=Please enter your email and password.");
+  }
+
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
@@ -21,12 +24,15 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
+  const email = formData.get("email");
+  const password = formData.get("password");
+  if (typeof email !== "string" || !email.trim() || typeof password !== "string" || !password) {
+    redirect("/signup?error=Please enter your email and password.");
+  }
+
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  });
+  const { error } = await supabase.auth.signUp({ email, password });
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`);

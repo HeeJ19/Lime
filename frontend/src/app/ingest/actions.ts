@@ -25,9 +25,9 @@ interface IngestResponse {
 
 // Orchestrates the Vision Ingestion Pipeline from the frontend side: forwards the
 // raw photo to the FastAPI AI microservice (which owns background removal, VLM
-// tagging, embedding, and the Pinecone upsert — see agent_docs/code_patterns.md
-// Architecture Pattern), then persists the result to Supabase using the signed-in
-// user's session so RLS scopes the new row/object to them.
+// tagging, embedding, and the Pinecone upsert — see docs/ARCHITECTURE.md), then
+// persists the result to Supabase using the signed-in user's session so RLS
+// scopes the new row/object to them.
 export async function ingestPhoto(formData: FormData): Promise<IngestResult> {
   const supabase = await createClient();
   const {

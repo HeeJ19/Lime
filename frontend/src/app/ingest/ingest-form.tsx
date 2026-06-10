@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ingestPhoto, type IngestResult } from "./actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +13,24 @@ import {
 
 export function IngestForm() {
   const formRef = useRef<HTMLFormElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<IngestResult | null>(null);
   const [pending, startTransition] = useTransition();
 
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    };
+  }, []);
+
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     setResult(null);
-    setPreview(file ? URL.createObjectURL(file) : null);
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    const url = file ? URL.createObjectURL(file) : null;
+    previewUrlRef.current = url;
+    setPreview(url);
   }
 
   function handleSubmit(formData: FormData) {
