@@ -21,3 +21,10 @@ FastAPI microservice for the Lime digital wardrobe app.
 - `GEMINI_API_KEY`
 - `PINECONE_API_KEY`
 - `PINECONE_INDEX_NAME`
+
+**Testing:**
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+The suite mocks Gemini, Open-Meteo, and Pinecone, so it runs without any of the secrets above — covering tag validation, the ingestion/recommendation routes, and weather/aesthetic ranking logic.

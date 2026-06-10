@@ -63,7 +63,7 @@ class TaggingError(Exception):
 
 
 def tag_image(image_bytes: bytes, *, mime_type: str = "image/png") -> ItemTags:
-    """Send a stripped item photo to Gemini 2.5 Flash and return validated tags."""
+    """Send a stripped item photo to Gemini 2.0 Flash and return validated tags."""
     api_key = os.environ["GEMINI_API_KEY"]
     encoded = base64.b64encode(image_bytes).decode("ascii")
 

@@ -1,6 +1,6 @@
 """The JSON contract for Gemini's VLM tagging output.
 
-PRD success criteria for Feature 1: Gemini 2.5 Flash must output structured JSON
+PRD success criteria for Feature 1: Gemini 2.0 Flash must output structured JSON
 (silhouette, palette, texture, aesthetic). Broken JSON parsing is an explicit
 quality failure — every response is validated against this model before use.
 

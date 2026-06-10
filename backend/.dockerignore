@@ -6,3 +6,6 @@ __pycache__
 .env.*
 scripts/
 *.md
+tests/
+pytest.ini
+requirements-dev.txt
